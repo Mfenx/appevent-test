@@ -9,8 +9,6 @@ export default (
   <Switch>
     <Route path='/' component={Products} exact />
     <Route path='/basket' component={Basket} />
-    {/*<Route path='/categories/:id' component={Phones} />*/}
-    {/*<Route path='/phones/:id' component={Phone} />*/}
     <Redirect to={'/'}/>
   </Switch>
 )

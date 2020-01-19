@@ -4,7 +4,7 @@ import {Link} from "react-router-dom"
 import {connect} from "react-redux"
 
 import {fetchProducts} from '../../store/actions/products'
-import {addToBasket} from '../../store/actions/basket'
+import {addToBasket, fetchBasket, fetchBasketStart} from '../../store/actions/basket'
 
 
 export interface Items {
@@ -14,48 +14,60 @@ export interface Items {
     price: number | string
 }
 
-
 interface IProductsProps {
-    products: any
-    items: any
+    products: []
+    items: []
     fetchProducts: any
     addToBasket: any
+    fetchBasket: any,
+    fetchBasketStart: any
 }
 
-interface IProductsState {
-}
 
+class Products extends Component<IProductsProps>{
 
-class Products extends Component<IProductsProps, IProductsState>{
-
-
-    componentDidMount(): void {
-        this.props.fetchProducts()
+    componentWillMount(): void {
+        if(localStorage.getItem('saveproducts')){
+            this.props.fetchBasket()
+        } else {
+            this.props.fetchBasketStart()
+        }
 
     }
 
+    componentDidMount(): void {
+        this.props.fetchProducts()
+    }
+
+    componentWillUpdate(nextProps: Readonly<IProductsProps>, nextState: Readonly<{}>, nextContext: any): void {
+        localStorage.setItem('saveproducts', JSON.stringify(nextProps.items))
+    }
 
     render(){
 
-        let productsCards:any = this.props.products.map((product:any):any => {
+        const {products, items, addToBasket} = this.props
+
+        //создаем массив товаров
+        let productsCards = products.map((product:Items) => {
+
+            // меняем кпокпку, если ид соотвествует ид в корзине
             let btn;
 
-            if(this.props.items.some((item:any) => item.id === product.id)){
+            if(items.some(({id}) => id === product.id)){
                 btn = <Link to={'/basket'}>
                         <button className="products__element__btn products__element__btn--basket">
                             Оформить заказ
                         </button>
                       </Link>
-            }
-            else{
+            }else{
                 btn = <button
-                    className="products__element__btn products__element__btn--add"
-                    onClick={() => this.props.addToBasket(product)}
-                >
-                    Добавить в корзину
-                </button>
+                        className="products__element__btn products__element__btn--add"
+                        onClick={() => addToBasket(product)}>
+                            Добавить в корзину
+                      </button>
             }
 
+            // создаем один товар
             return (
                 <div className="products__element" key={product.id}>
                     <div className="products__element__images">
@@ -76,7 +88,7 @@ class Products extends Component<IProductsProps, IProductsState>{
                 )
         });
 
-
+        //создаем список товаров
         return (
             <div className="content">
                 <h2 className="content__title">Католог товаров</h2>
@@ -99,7 +111,9 @@ const mapStateToProps = (state:any) =>  {
 const mapDispatchToProps = (dispatch:any) => {
     return {
         fetchProducts: () => dispatch(fetchProducts()),
-        addToBasket: (item:any) => dispatch(addToBasket(item))
+        addToBasket: (item:[]) => dispatch(addToBasket(item)),
+        fetchBasket: () => dispatch(fetchBasket()),
+        fetchBasketStart: () => dispatch(fetchBasketStart())
     }
 }
 

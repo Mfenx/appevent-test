@@ -1,30 +1,47 @@
 import React, {Component} from 'react'
 import './Basket.scss'
 import {connect} from "react-redux";
-import {removeToBasket} from "../../store/actions/basket";
+import {fetchBasket, removeToBasket, fetchBasketStart} from "../../store/actions/basket";
 
 interface IBasketProps {
-    items: any
+    items: []
     removeToBasket:any
+    fetchBasket: any
+    fetchBasketStart: any
 }
-
 
 
 class Basket extends Component<IBasketProps>{
 
+    componentDidMount(): void {
+
+        if(localStorage.getItem('saveproducts')){
+            this.props.fetchBasket()
+        }else{
+            this.props.fetchBasketStart()
+        }
+    }
+
+    componentWillUpdate(nextProps: Readonly<IBasketProps>, nextState: Readonly<{}>, nextContext: any): void {
+        localStorage.setItem('saveproducts', JSON.stringify(nextProps.items))
+    }
 
 
     render(): React.ReactElement<any, string | React.JSXElementConstructor<any>> | string | number | {} | React.ReactNodeArray | React.ReactPortal | boolean | null | undefined {
 
-        let total = this.props.items.reduce((total:any, item:any) => total + item.price, 0)
+        const {items, removeToBasket} = this.props
+        //подсчет общей стоимости товаров
+        let total = items.reduce((total:number, {price}) => total + price, 0)
 
-        let productsRows = this.props.items.map((item:any) => {
+        // создаем массив продуктов в корзине
+        let productsRows = items.map(({id, name, price}) => {
             return (
-                <tr key={item.id}>
-                    <td>{item.name}</td>
-                    <td>{item.price}</td>
+                <tr key={id}>
+                    <td>{name}</td>
+                    <td>{price}</td>
                     <td>
-                        <button className="basket__table__btn" onClick={() => this.props.removeToBasket(item.id)}>
+                        <button className="basket__table__btn"
+                                onClick={() => removeToBasket(id)}>
                             &times;
                         </button>
                     </td>
@@ -32,9 +49,11 @@ class Basket extends Component<IBasketProps>{
             )
         })
 
-
-        if(!this.props.items.length){
-            return <h2 className="content__title">Корзина пуста</h2>
+        //если массив не пустой
+        if(!items.length){
+            return <h2 className="content__title--basket">
+                Корзина пуста
+            </h2>
         }else{
             return (
                 <div className="content">
@@ -59,10 +78,7 @@ class Basket extends Component<IBasketProps>{
                 </div>
             )
         }
-
-
     }
-
 }
 
 const mapStateToProps = (state:any) =>  {
@@ -73,7 +89,9 @@ const mapStateToProps = (state:any) =>  {
 
 const mapDispatchToProps = (dispatch:any) => {
     return {
-        removeToBasket: (id:any) => dispatch(removeToBasket(id)),
+        removeToBasket: (id:number) => dispatch(removeToBasket(id)),
+        fetchBasket: () => dispatch(fetchBasket()),
+        fetchBasketStart: () => dispatch(fetchBasketStart())
     }
 }
 

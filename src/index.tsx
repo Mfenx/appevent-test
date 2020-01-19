@@ -31,7 +31,6 @@ const store = createStore(
     composeEnhancers(applyMiddleware(thunk))
 )
 
-localStorage.setItem('token', '12345')
 
 const app = (
     <Provider store={store}>

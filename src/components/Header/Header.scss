@@ -1,14 +1,17 @@
+$header-white: #ffffff;
+$header-a: #363f54;
+
 .header{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: white;
+  color: $header-white;
   background: linear-gradient(90deg, #5041b2 0%, #7969e6 100%);
   box-shadow: 0 8px 10px rgba(0,0,0,0.5);
   &__title{
     margin-left: 50px;
   }
-  &__elements {
+  &__elements{
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -17,7 +20,7 @@
     padding: 0;
     & li{
       & a{
-        color: #363f54;
+        color: $header-a;
         font-size: 22px;
         text-decoration: none;
         background: none;
@@ -25,10 +28,9 @@
         padding: 0 20px;
         transition: color, font-size .3s;
         &.active{
-          color: white;
+          color: $header-white;
           font-size: 30px;
         }
-
       }
     }
   }

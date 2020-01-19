@@ -4,5 +4,10 @@ $color-title: #000000;
   &__title {
     color: $color-title;
     margin-left: 20px;
+    &--basket{
+      margin-left: 0;
+      margin-top: 100px;
+      text-align: center;
+    }
   }
 }
