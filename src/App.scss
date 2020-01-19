@@ -1,0 +1,8 @@
+$color-title: #000000;
+
+.content {
+  &__title {
+    color: $color-title;
+    margin-left: 20px;
+  }
+}
